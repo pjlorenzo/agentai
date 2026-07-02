@@ -1,10 +1,6 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
     inputs:
       environment:
@@ -56,8 +52,8 @@ jobs:
   deploy:
     name: Deploy to ${{ github.event.inputs.environment || 'dev' }}
     needs: test
-    # Only run deploy on push to main or manual trigger (exclude automated PR checks)
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    # Only run deploy on manual trigger
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: ${{ github.event.inputs.environment || 'dev' }}
     permissions:
@@ -101,9 +97,7 @@ jobs:
 
       # Deploy everything (infrastructure & apps)
       - name: Aspire Deploy All
-        if: |
-          github.event.inputs.target == 'all' || 
-          github.event_name == 'push'
+        if: github.event.inputs.target == 'all'
         run: |
           aspire deploy --apphost src/AgentsAI.AppHost/AgentsAI.AppHost.csproj --environment ${{ github.event.inputs.environment || 'dev' }} --non-interactive
         env:
