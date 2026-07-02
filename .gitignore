@@ -1,0 +1,77 @@
+## Visual Studio
+## Ignore Visual Studio temporary files, build results, and user settings
+
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# User-specific files (MonoDevelop/ActiveWriter)
+*.userprefs
+
+# Mono auto generated files
+mono_crash.*
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Re]leases/
+x64/
+x86/
+[Aa]rm/
+[Aa]rm64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio 2015/2017 cache directory
+.vs/
+# Generated user secrets file
+UserSecretsId.txt
+
+# Web tools template cache
+_ReSharper*/
+*.[Re]Sharper
+*.DotSettings.user
+
+# Just-In-Time Debugger logs
+*.dhd
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Rider
+.idea/
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# dotnet Aspire / .aspire
+.aspire/
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be rebuilt as required, sandboxing packages
+**/[Pp]ackages/*
+# exluding a single folder from voiding package exclusion
+!**/[Pp]ackages/build/
+# NuGet Restore MSBuild Code Generation files
+project.assets.json
+project.lock.json
+
+# Backup & temporary files
+*~
+*.tmp
+*.bak

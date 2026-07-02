@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="src/AgentsAI.ApiService/AgentsAI.ApiService.csproj" />
+  <Project Path="src/AgentsAI.AppHost/AgentsAI.AppHost.csproj" />
+  <Project Path="src/AgentsAI.ServiceDefaults/AgentsAI.ServiceDefaults.csproj" />
+  <Project Path="src/AgentsAI.Web/AgentsAI.Web.csproj" />
+  <Project Path="tests/AgentsAI.Tests/AgentsAI.Tests.csproj" />
+</Solution>

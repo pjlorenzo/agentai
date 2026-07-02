@@ -1,0 +1,6 @@
+{
+  "appHost": {
+    "path": "src/AgentsAI.AppHost/AgentsAI.AppHost.csproj"
+  },
+  "channel": "stable"
+}
