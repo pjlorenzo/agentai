@@ -40,6 +40,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
+          cache: true
+          cache-dependency-path: 'AgentsAI.slnx'
 
       - name: Restore dependencies
         run: dotnet restore
@@ -73,6 +75,8 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.x'
+          cache: true
+          cache-dependency-path: 'AgentsAI.slnx'
 
       - name: Install Aspire CLI
         run: |
