@@ -22,13 +22,12 @@ on:
           - infrastructure
           - api-service
           - web-frontend
-env:
-  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-
+    env:
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
@@ -63,6 +62,7 @@ jobs:
       Azure__SubscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       Azure__Location: ${{ vars.AZURE_LOCATION || 'uksouth' }}
       Azure__ResourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
+      NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 
     steps:
       - name: Checkout Code
