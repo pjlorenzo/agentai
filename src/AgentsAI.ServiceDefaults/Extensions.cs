@@ -33,6 +33,15 @@ public static class Extensions
 
             // Turn on service discovery by default
             http.AddServiceDiscovery();
+
+            if (builder.Environment.IsDevelopment())
+            {
+                // Bypass SSL certificate validation in development/test environment (e.g., CI/CD runners)
+                http.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+                });
+            }
         });
 
         // Uncomment the following to restrict the allowed schemes for service discovery.
