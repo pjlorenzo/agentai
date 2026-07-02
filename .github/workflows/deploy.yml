@@ -26,7 +26,8 @@ on:
           - infrastructure
           - api-service
           - web-frontend
-
+env:
+  NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
 jobs:
   test:
     name: Run Tests
@@ -34,10 +35,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.x'
           cache: true
@@ -69,10 +70,10 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup .NET SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '10.x'
           cache: true
