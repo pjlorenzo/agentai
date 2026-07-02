@@ -6,11 +6,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <UserSecretsId>2fc6f336-e0dd-4252-bdec-73855ccd468b</UserSecretsId>
+    <NoWarn>$(NoWarn);ASPIRECOMPUTE003</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AgentsAI.ApiService\AgentsAI.ApiService.csproj" />
     <ProjectReference Include="..\AgentsAI.Web\AgentsAI.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.Azure.AppContainers" Version="13.4.6" />
+    <PackageReference Include="Aspire.Hosting.Azure.ContainerRegistry" Version="13.4.6" />
   </ItemGroup>
 
 </Project>

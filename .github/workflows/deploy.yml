@@ -1,0 +1,133 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target Environment'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - uat
+          - prod
+      target:
+        description: 'What to deploy'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - infrastructure
+          - api-service
+          - web-frontend
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build Solution
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Execute Tests
+        run: dotnet test --no-build --configuration Release --verbosity normal
+
+  deploy:
+    name: Deploy to ${{ github.event.inputs.environment || 'dev' }}
+    needs: test
+    # Only run deploy on push to main or manual trigger (exclude automated PR checks)
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      Azure__SubscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      Azure__Location: ${{ vars.AZURE_LOCATION || 'uksouth' }}
+      Azure__ResourceGroup: ${{ vars.AZURE_RESOURCE_GROUP }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.x'
+
+      - name: Install Aspire CLI
+        run: |
+          curl -sSL https://aspire.dev/install.sh | bash
+          echo "$HOME/.aspire/bin" >> "$GITHUB_PATH"
+
+      # Log in to Azure using OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Print Deployment Config
+        run: |
+          echo "Deploying to Environment: ${{ github.event.inputs.environment || 'dev' }}"
+          echo "Selected Target: ${{ github.event.inputs.target || 'all' }}"
+          echo "Azure Region: ${{ env.Azure__Location }}"
+          aspire --version
+
+      # Deploy everything (infrastructure & apps)
+      - name: Aspire Deploy All
+        if: |
+          github.event.inputs.target == 'all' || 
+          github.event_name == 'push'
+        run: |
+          aspire deploy --apphost src/AgentsAI.AppHost/AgentsAI.AppHost.csproj --environment ${{ github.event.inputs.environment || 'dev' }} --non-interactive
+        env:
+          Parameters__registry_endpoint: ghcr.io
+          Parameters__registry_repository: ${{ github.repository }}
+
+      # Deploy infrastructure only
+      - name: Aspire Deploy Infrastructure
+        if: github.event.inputs.target == 'infrastructure'
+        run: |
+          aspire do provision-azure-bicep-resources --apphost src/AgentsAI.AppHost/AgentsAI.AppHost.csproj --environment ${{ github.event.inputs.environment || 'dev' }} --non-interactive
+        env:
+          Parameters__registry_endpoint: ghcr.io
+          Parameters__registry_repository: ${{ github.repository }}
+
+      # Deploy API Service only
+      - name: Aspire Deploy API Service
+        if: github.event.inputs.target == 'api-service'
+        run: |
+          aspire do provision-apiservice-containerapp --apphost src/AgentsAI.AppHost/AgentsAI.AppHost.csproj --environment ${{ github.event.inputs.environment || 'dev' }} --non-interactive
+        env:
+          Parameters__registry_endpoint: ghcr.io
+          Parameters__registry_repository: ${{ github.repository }}
+
+      # Deploy Web UI only
+      - name: Aspire Deploy Web UI
+        if: github.event.inputs.target == 'web-frontend'
+        run: |
+          aspire do provision-webfrontend-containerapp --apphost src/AgentsAI.AppHost/AgentsAI.AppHost.csproj --environment ${{ github.event.inputs.environment || 'dev' }} --non-interactive
+        env:
+          Parameters__registry_endpoint: ghcr.io
+          Parameters__registry_repository: ${{ github.repository }}
