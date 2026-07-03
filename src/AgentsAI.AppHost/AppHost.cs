@@ -1,4 +1,16 @@
+using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
+
 var builder = DistributedApplication.CreateBuilder(args);
+
+// Bypass SSL certificate validation for AppHost's internal HttpClient calls (like WithHttpHealthCheck)
+builder.Services.ConfigureHttpClientDefaults(http =>
+{
+    http.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    });
+});
 
 var acr = builder.AddAzureContainerRegistry("agentaiacr");
 
